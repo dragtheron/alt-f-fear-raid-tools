@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+..\..\..\..\..\..\_retail_\BlizzardInterfaceCode\Interface\FrameXML\UI.xsd">
+  <Script file="roster.lua"/>
+  <Frame name="AFFRT_Roster">
+    <Frames>
+      <!-- frame of the new guild tab -->
+      <Frame>
+
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnEvent>AFFRT.Roster.OnEvent(self, event, ...)</OnEvent>
+      <OnLoad>AFFRT.Roster.OnLoad(self)</OnLoad>
+    </Scripts>
+  </Frame>
+</Ui>

@@ -1,0 +1,62 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+..\..\..\..\..\..\_retail_\BlizzardInterfaceCode\Interface\FrameXML\UI.xsd">
+  <Script file="localization/de.lua"/>
+  <Script file="communitiesFrameTab.lua"/>
+  <CheckButton parentKey="AFFRT_RosterTab" parent="CommunitiesFrame">
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeKey="$parent.GuildInfoTab" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+    </Anchors>
+    <Size x="32" y="32"/>
+    <KeyValues>
+      <KeyValue key="tooltip" value="COMMUNITIES_GUILD_INFO_TAB_TOOLTIP" type="global"/>
+    </KeyValues>
+    <Layers>
+      <Layer level="BORDER">
+        <Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+          <Size x="64" y="64"/>
+          <Anchors>
+            <Anchor point="TOPLEFT" x="-3" y="11"/>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK" textureSubLevel="1">
+        <Texture parentKey="Icon" file="INTERFACE\HELPFRAME\REPORTLAGICON-CHAT">
+          <Size x="30" y="30"/>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <TexCoords left="0.03125" right="0.96875" top="0.03125" bottom="0.96875"/>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK" textureSubLevel="2">
+        <Texture parentKey="IconOverlay" hidden="true">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+            <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+          </Anchors>
+          <Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+        PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+        self:SetChecked(true);
+        AFFRT.Roster.CommunitiesFrameTab.OnClick(self);
+      </OnClick>
+      <OnEnter function="CommunitiesFrameTab_OnEnter"/>
+      <OnLeave function="CommunitiesFrameTab_OnLeave"/>
+      <OnLoad>
+        local communityFrame = self:GetParent();
+        self.tooltip = AFFRT.L["ROSTER_MANAGER"];
+        self.Icon:SetTexture("Interface\\Icons\\ACHIEVEMENT_GUILDPERK_HAVEGROUP WILLTRAVEL");
+        self:SetFrameLevel(self:GetParent().GuildInfoTab:GetFrameLevel());
+        communityFrame:RegisterCallback(CommunitiesFrameMixin.Event.DisplayModeChanged, AFFRT.Roster.CommunitiesFrame.OnDisplayModeChanged, self);
+        communityFrame:RegisterCallback(CommunitiesFrameMixin.Event.ClubSelected, AFFRT.Roster.CommunitiesFrameTab.OnClubSelected, self); 
+      </OnLoad>
+    </Scripts>
+    <NormalTexture/>
+    <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+    <CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+  </CheckButton>
+</Ui>

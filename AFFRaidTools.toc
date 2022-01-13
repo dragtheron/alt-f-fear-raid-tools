@@ -1,0 +1,21 @@
+## Interface: 90105
+## Title: Alt F Fear Raid Tools
+## Notes: Alt F Fear Raid Tools
+## Author: Dragtheron
+## Version: 0.1.0
+
+## X-License: All Rights Reserved
+## X-Website: https://git.tsno.de/dragtheron/alf-f-fear-raid-tools
+## X-Curse-Project-ID: 566822
+
+## Dependencies: Blizzard_Communities
+## OptionalDeps: AFFRaidTools_Dev
+
+## SavedVariables: AFFRT_SV
+
+modules\core\core.lua
+modules\core\core.xml
+modules\attention\attention.xml
+modules\roster\roster.xml
+modules\roster\communitiesFrame.xml
+modules\roster\communitiesFrameTab.xml

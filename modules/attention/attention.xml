@@ -1,0 +1,10 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+..\..\..\..\..\..\_retail_\BlizzardInterfaceCode\Interface\FrameXML\UI.xsd">
+  <Script file="attention.lua"/>
+  <Frame name="AFFRT_Attention">
+    <Scripts>
+      <OnEvent>AFFRT.Attention:OnEvent(self, event, ...)</OnEvent>
+      <OnLoad>AFFRT.Attention:OnLoad(self)</OnLoad>
+    </Scripts>
+  </Frame>
+</Ui>

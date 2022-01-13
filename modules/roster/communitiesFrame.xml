@@ -1,0 +1,280 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+..\..\..\..\..\..\_retail_\BlizzardInterfaceCode\Interface\FrameXML\UI.xsd">
+  <Script file="localization/de.lua"/>
+  <Script file="communitiesFrame.lua"/>
+	<Button name="AFFRT_CommunitiesMemberListEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<Size x="140" y="20"/>
+		<Frames>
+			<Frame parentKey="NameFrame">
+				<!-- Maybe do fancy stuff with the name. Our move to Layer. -->
+				<Size x="136" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+							<Size x="136" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RankIcon">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RolesFrame">
+				<Size x="60" y="0"/>
+				<Anchors>
+					<Anchor point="LEFT" x="8" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Class" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Rank" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="76" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Itemlevel" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="50" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Rank" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Attendance" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="75" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RolesFrame" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture setAllPoints="true" file="Interface\GuildFrame\GuildFrame">
+			<TexCoords left="0.36230469" right="0.38183594" top="0.95898438" bottom="0.99804688"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
+	</Button>
+  <Frame name="AFFRT_CommunitiesFrame">
+    <Frames>
+			<Frame parentKey="AFFRT_MembersList" parent="CommunitiesFrame">
+				<KeyValues>
+					<KeyValue key="expanded" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-26" y="28"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-165" y="-63"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="MemberCount" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="17"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- The table will need a column manager -->
+					<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="22" y="60"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="sortingFunction" value="CommunitiesMemberListColumnDisplay_OnClick" type="global"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" x="-3" y="-3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-15"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+									</Layer>
+								</Layers>
+							</Slider>
+						</Frames>
+					</ScrollFrame>
+					<Frame parentKey="InsetFrame" useParentLevel="false" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-3" y="3"/>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Bg:Hide();
+								self:SetFrameLevel(100);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						AFFRT.Roster.CommunitiesFrame.MembersList.OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						AFFRT.Roster.CommunitiesFrame.MembersList.OnShow(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="AFFRT_RosterList" parent="CommunitiesFrame">
+				<KeyValues>
+					<KeyValue key="expanded" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-187" y="28"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CommunitiesList" relativePoint="TOPRIGHT" x="26" y="-60"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="MemberCount" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="17"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- The table will need a column manager -->
+					<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="ColumnDisplayTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-3" y="60"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="20" y="60"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="sortingFunction" value="CommunitiesMemberListColumnDisplay_OnClick" type="global"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="InsetBorderTopLeft" inherits="UI-Frame-InnerTopLeft">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" x="0" y="3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderTopRight" inherits="UI-Frame-InnerTopRight">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="0" y="3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderBottomLeft" inherits="UI-Frame-InnerBotLeftCorner">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent" x="-3" y="-3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderTop" inherits="_UI-Frame-InnerTopTile">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="InsetBorderLeft" inherits="!UI-Frame-InnerLeftTile">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<ScrollFrame parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-15"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="11"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Background" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+									</Layer>
+								</Layers>
+							</Slider>
+						</Frames>
+					</ScrollFrame>
+					<Frame parentKey="InsetFrame" useParentLevel="false" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-3" y="3"/>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Bg:Hide();
+								self:SetFrameLevel(100);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						AFFRT.Roster.CommunitiesFrame.RosterList.OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						AFFRT.Roster.CommunitiesFrame.RosterList.OnShow(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				AFFRT.Roster.CommunitiesFrame.OnLoad(self);
+			</OnLoad>
+		</Scripts>
+  </Frame>
+</Ui>
