@@ -16,7 +16,7 @@ end
 AFFRT.Roster.CommunitiesFrameTab = {}
 
 function AFFRT.Roster.CommunitiesFrameTab.OnClick(frame)
-	AFFRT.Roster.CommunitiesFrame.Show();
+	AFFRT.Roster.CommunitiesFrame.Show(frame);
 end
 
 function AFFRT.Roster.CommunitiesFrameTab.IsGuildSelected()

@@ -44,8 +44,8 @@
         self:SetChecked(true);
         AFFRT.Roster.CommunitiesFrameTab.OnClick(self);
       </OnClick>
-      <OnEnter function="CommunitiesFrameTab_OnEnter"/>
-      <OnLeave function="CommunitiesFrameTab_OnLeave"/>
+      <!-- <OnEnter function="CommunitiesFrameTab_OnEnter"/>
+      <OnLeave function="CommunitiesFrameTab_OnLeave"/> -->
       <OnLoad>
         local communityFrame = self:GetParent();
         self.tooltip = AFFRT.L["ROSTER_MANAGER"];

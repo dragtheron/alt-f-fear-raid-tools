@@ -19,8 +19,8 @@ local COMMUNITIES_MEMBER_LIST_EVENTS = {
 AFFRT.Roster.CommunitiesFrame = {}
 
 -- update tab state and visibility when display mode changes (by original blizz events)
-function AFFRT.Roster.CommunitiesFrame.OnDisplayModeChanged()
-	if CommunitiesFrame.displayMode ~= "AFFRT_Roster" then
+function AFFRT.Roster.CommunitiesFrame.Update(frame)
+	if not frame.displayAFFRT then
 		CommunitiesFrame.AFFRT_MembersList:SetShown(false);
 		CommunitiesFrame.AFFRT_RosterList:SetShown(false);
     CommunitiesFrame.AFFRT_RosterTab:SetChecked(false);
@@ -58,9 +58,16 @@ function AFFRT.Roster.CommunitiesFrame.OnDisplayModeChanged()
   end
 end
 
-function AFFRT.Roster.CommunitiesFrame.Show()
-  CommunitiesFrame.displayMode = "AFFRT_Roster";
-  AFFRT.Roster.CommunitiesFrame.OnDisplayModeChanged();
+function AFFRT.Roster.CommunitiesFrame.Show(frame)
+  frame.displayAFFRT = true;
+  CommunitiesFrame.displayMode = nil;
+  AFFRT.Roster.CommunitiesFrame.Update(frame);
+end
+
+-- original display mode changes, close affrt
+function AFFRT.Roster.CommunitiesFrame.OnDisplayModeChanged(frame)
+  frame.displayAFFRT = false;
+  AFFRT.Roster.CommunitiesFrame.Update(frame);
 end
 
 function AFFRT.Roster.CommunitiesFrame.OnLoad(self)
