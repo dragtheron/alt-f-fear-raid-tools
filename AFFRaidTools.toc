@@ -2,7 +2,7 @@
 ## Title: Alt F Fear Raid Tools
 ## Notes: Alt F Fear Raid Tools
 ## Author: Dragtheron
-## Version: 0.1.0
+## Version: 0.2.0
 
 ## X-License: All Rights Reserved
 ## X-Website: https://git.tsno.de/dragtheron/alf-f-fear-raid-tools
