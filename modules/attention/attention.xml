@@ -3,8 +3,8 @@
   <Script file="attention.lua"/>
   <Frame name="AFFRT_Attention">
     <Scripts>
-      <OnEvent>AFFRT.Attention:OnEvent(self, event, ...)</OnEvent>
-      <OnLoad>AFFRT.Attention:OnLoad(self)</OnLoad>
+      <OnEvent>AFFRT.Attention.OnEvent(self, event, ...)</OnEvent>
+      <OnLoad>AFFRT.Attention.OnLoad(self)</OnLoad>
     </Scripts>
   </Frame>
 </Ui>

@@ -2,8 +2,8 @@
 ..\..\..\..\..\..\_retail_\BlizzardInterfaceCode\Interface\FrameXML\UI.xsd">
   <Frame name="AFFRT_Core">
     <Scripts>
-      <OnEvent>self.AFFRT.Core:OnEvent(self, event, ...)</OnEvent>
-      <OnLoad>AFFRT.Core:OnLoad(self)</OnLoad>
+      <OnEvent>self.AFFRT.Core.OnEvent(self, event, ...)</OnEvent>
+      <OnLoad>AFFRT.Core.OnLoad(self)</OnLoad>
     </Scripts>
   </Frame>
 </Ui>

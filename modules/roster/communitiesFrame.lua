@@ -314,6 +314,18 @@ function AFFRT.Roster.CommunitiesFrame.RosterList.OnShow(frame)
   AFFRT.Roster.CommunitiesFrame.MembersList.UpdateList(frame);
 end
 
+function AFFRT.Roster.CommunitiesFrame.RosterList.Update(frame)
+  AFFRT.Roster.CommunitiesFrame.RefreshLayout(frame);
+  AFFRT.Roster.CommunitiesFrame.RefreshListDisplay(frame);
+end
+
+function AFFRT.Roster.CommunitiesFrame.RosterList.OnPlayerDataUpdated(frame)
+  if frame then
+    AFFRT.Roster.CommunitiesFrame.MembersList.UpdateList(frame);
+    AFFRT.Roster.CommunitiesFrame.RefreshListDisplay(frame);
+  end
+end
+
 function AFFRT.Roster.CommunitiesFrame.RosterList.OnLoad(frame)
   -- OnScroll
   frame.ListScrollFrame.update = function()
@@ -323,4 +335,12 @@ function AFFRT.Roster.CommunitiesFrame.RosterList.OnLoad(frame)
 	frame.ListScrollFrame.scrollBar:SetValue(0);
   frame.ColumnDisplay:LayoutColumns(columns);
   frame.ColumnDisplay:Show();
+
+  CallbackRegistryMixin.OnLoad(AFFRT.Roster.EventsMixin);
+  AFFRT.Roster.EventsMixin:RegisterCallback(AFFRT.Roster.EventsMixin.Event.PlayerDataUpdated, AFFRT.Roster.CommunitiesFrame.RosterList.OnPlayerDataUpdated, frame);
 end
+
+AFFRT.Roster.EventsMixin = CreateFromMixins(CallbackRegistryMixin);
+AFFRT.Roster.EventsMixin:GenerateCallbackEvents({
+  "PlayerDataUpdated",
+});

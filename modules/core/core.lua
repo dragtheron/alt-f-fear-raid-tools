@@ -27,9 +27,11 @@ function AFFRT.Core.Broadcast.CheckChannelAndSender(channel, sender)
   end
   -- whisper
   if channel == "WHISPER" then
-    if AFFRT.Core.UnitInGuild(sender) then
+    local senderNameForGuildLookup = Ambiguate(sender, "guild");
+    if IsGuildMember(senderNameForGuildLookup) then
       return true
     end
+    AFFRT.Core.Log.Debug("Not in Guild", sender);
   end
   return false
 end
@@ -38,17 +40,17 @@ function AFFRT.Core.Broadcast.CheckPrefix(prefix)
   return prefix and AFFRT.Core.Broadcast.AllowedPrefixes[prefix]
 end
 
-function AFFRT.Core.Broadcast.OnEvent(...)
+function AFFRT.Core.Broadcast.OnEvent(frame, ...)
   local prefix, message, channel, sender = ...
   if AFFRT.Core.Broadcast.CheckPrefix(prefix) and AFFRT.Core.Broadcast.CheckChannelAndSender(channel, sender) then
-    AFFRT.Core.Broadcast.OnReceive(sender, prefix, strsplit("\t", message))
+    AFFRT.Core.Broadcast.OnReceive(frame, sender, prefix, strsplit("\t", message))
   end
 end
 
-function AFFRT.Core.Broadcast.OnReceive(sender, prefix, topic, ...)
+function AFFRT.Core.Broadcast.OnReceive(frame, sender, prefix, topic, ...)
   AFFRT.Core.Log.Debug("Received Message!", sender, prefix, topic)
   for name, module in pairs(AFFRT.Core.Broadcast.OnAddonMessage) do
-    module.Broadcast.OnReceive(sender, topic, ...)
+    module.Broadcast.OnReceive(frame, sender, topic, ...)
   end
 end
 
@@ -58,6 +60,7 @@ function AFFRT.Core.Broadcast.Send(prefix, topic, message, channel, target)
   topic = topic or ""
   message = topic .. "\t" .. message
   C_ChatInfo.SendAddonMessage(prefix, message, channel, target)
+  AFFRT.Core.Log.Debug("Message Sent!", prefix, channel, topic)
 end
 
 
@@ -159,7 +162,7 @@ function AFFRT.Core.InitModule(name, prefix)
   Module.Broadcast.Send = function(...)
     AFFRT.Core.Broadcast.Send(prefix, ...)
   end
-  Module.Broadcast.OnReceive = function(sender, prefix, ...)
+  Module.Broadcast.OnReceive = function(frame, sender, prefix, ...)
     return nil
   end
   Module.Database = {
@@ -187,18 +190,18 @@ end
 
 -- frame scripts
 
-function AFFRT.Core:OnEvent(self, event, ...)
-  AFFRT = self.AFFRT
+function AFFRT.Core.OnEvent(frame, event, ...)
+  AFFRT = frame.AFFRT
   if event == "ADDON_LOADED" then
-    AFFRT.Core:OnEvent_AddonLoaded(self, ...)
+    AFFRT.Core.OnEvent_AddonLoaded(frame, ...)
   elseif event == "CHAT_MSG_ADDON" then
-    AFFRT.Core.Broadcast.OnEvent(...)
+    AFFRT.Core.Broadcast.OnEvent(frame, ...)
   else
     AFFRT.Core.Log.Debug("Unhandled Event", event)
   end
 end
 
-function AFFRT.Core:OnEvent_AddonLoaded(self, ...)
+function AFFRT.Core.OnEvent_AddonLoaded(frame, ...)
   local addonName = ...
   if addonName ~= AddonName then
     AFFRT.Core.Log.Debug("addon name mismatch", addonName, AddonName)
@@ -210,11 +213,11 @@ function AFFRT.Core:OnEvent_AddonLoaded(self, ...)
     C_ChatInfo.RegisterAddonMessagePrefix(prefix)
   end
   AFFRT.Core.Log.Debug("ADDON_LOADED", "Happy Testing ^_^")
-  self:UnregisterEvent("ADDON_LOADED")
+  frame:UnregisterEvent("ADDON_LOADED")
 end
 
-function AFFRT.Core:OnLoad(self)
-  self.AFFRT = AFFRT
-  self:RegisterEvent("ADDON_LOADED");
-  self:RegisterEvent("CHAT_MSG_ADDON")
+function AFFRT.Core.OnLoad(frame)
+  frame.AFFRT = AFFRT
+  frame:RegisterEvent("ADDON_LOADED");
+  frame:RegisterEvent("CHAT_MSG_ADDON")
 end
