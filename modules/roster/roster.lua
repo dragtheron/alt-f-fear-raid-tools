@@ -6,8 +6,10 @@ Module.Broadcast.Topics = {
   ItemlevelSyncRequest = "IR",
 };
 
-Module.PlayerInspectionReady = true;
-Module.ItemLevelRequestQueue = {};
+Module.PlayerEnteredWorldOnce = false
+Module.PlayerInspectionReady = true
+Module.ItemLevelRequestQueue = {}
+
 
 function Module.GetPlayerData(guid)
   return Module.Database.Get({ "PlayerData", guid });
@@ -93,12 +95,14 @@ function Module.OnEvent(frame, event, ...)
   Module = frame.Module
   if event == "ADDON_LOADED" then
     Module.OnEvent_AddonLoaded(frame, ...);
-  elseif event == "PLAYER_EQUIPMENT_CHANGED" then
-    Module.OnEvent_PlayerEquipmentChanged();
   elseif event == "GROUP_JOINED" then
     Module.OnEvent_GroupJoined()
   elseif event == "INSPECT_READY" then
     Module.OnEvent_InspectReady()
+  elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+    Module.OnEvent_PlayerEquipmentChanged()
+  elseif event == "PLAYER_ENTERING_WORLD" then
+    Module.OnEvent_PlayerEnteringWorld()  
   else
     Module.Log.Debug("Unhandled Event", event)
   end
@@ -125,8 +129,6 @@ function Module.OnEvent_AddonLoaded(frame, ...)
     return
   end
   Module.Database.InitDatabase();
-  Module.Database.Data = Module.Database.InitDatabase();
-  Module.RequestItemLevelSync();
   Module.Log.Debug("ADDON_LOADED", "Happy Testing ^_^")
   frame:UnregisterEvent("ADDON_LOADED")
 end
@@ -135,10 +137,18 @@ function Module.OnEvent_GroupJoined()
   Module.RequestItemLevelSync();
 end
 
+function Module.OnEvent_PlayerEnteringWorld()
+  if not Module.PlayerEnteredWorldOnce then
+    Module.PlayerEnteredWorldOnce = true
+    Module.RequestItemLevelSync()
+  end
+end
+
 function Module.OnLoad(frame)
   frame.Module = Module;
   frame:RegisterEvent("ADDON_LOADED")
   frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
   frame:RegisterEvent("GROUP_JOINED")
   frame:RegisterEvent("INSPECT_READY")
+  frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 end

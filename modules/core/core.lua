@@ -20,6 +20,16 @@ function AFFRT.Core.Broadcast.Register()
   AFFRT.Core.Broadcast.OnAddonMessage[self.name] = self
 end
 
+function AFFRT.Core.IsGuildMember(name)
+  for i = 1, GetNumGuildMembers() or 0 do
+    local guildMemberName = GetGuildRosterInfo(i)
+    if guildMemberName and guildMemberName == name then
+      return true
+    end
+  end
+  return false
+end
+
 function AFFRT.Core.Broadcast.CheckChannelAndSender(channel, sender)
   -- safe channels
   if channel == "RAID" or channel == "GUILD" or channel == "INSTANCE_CHAT" or channel == "PARTY" then
@@ -27,8 +37,7 @@ function AFFRT.Core.Broadcast.CheckChannelAndSender(channel, sender)
   end
   -- whisper
   if channel == "WHISPER" then
-    local senderNameForGuildLookup = Ambiguate(sender, "guild");
-    if IsGuildMember(senderNameForGuildLookup) then
+    if AFFRT.Core.IsGuildMember(sender) then
       return true
     end
     AFFRT.Core.Log.Debug("Not in Guild", sender);
@@ -98,10 +107,10 @@ function AFFRT.Core.Database.Init()
 end
 
 function AFFRT.Core.Database.InitModuleData(moduleName)
-  if not AFFRT_SV.Data[moduleName] then
-    AFFRT_SV.Data[moduleName] = {};
+  if not AFFRT.Core.Database.data[moduleName] then
+    AFFRT.Core.Database.data[moduleName] = {};
   end
-  return AFFRT_SV.Data[moduleName]
+  return AFFRT.Core.Database.data[moduleName]
 end
 
 function AFFRT.Core.Database.Update(database, path, value)
@@ -118,6 +127,9 @@ end
 
 function AFFRT.Core.Database.Get(database, path)
   for i, field in ipairs(path) do
+    if database == nil then
+      return nil
+    end
     if i == #path then
       return database[field];
     end
@@ -207,7 +219,6 @@ function AFFRT.Core.OnEvent_AddonLoaded(frame, ...)
     AFFRT.Core.Log.Debug("addon name mismatch", addonName, AddonName)
     return
   end
-  AFFRT.Core.Database.Init();
   for prefix, _ in pairs(AFFRT.Core.Broadcast.AllowedPrefixes) do
     AFFRT.Core.Log.Debug("Registering Prefix", prefix)
     C_ChatInfo.RegisterAddonMessagePrefix(prefix)
@@ -218,6 +229,8 @@ end
 
 function AFFRT.Core.OnLoad(frame)
   frame.AFFRT = AFFRT
-  frame:RegisterEvent("ADDON_LOADED");
+  frame:RegisterEvent("ADDON_LOADED")
   frame:RegisterEvent("CHAT_MSG_ADDON")
 end
+
+AFFRT.Core.Database.Init();
