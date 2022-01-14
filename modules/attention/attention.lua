@@ -23,9 +23,9 @@ function Module.OnEvent(frame, event, ...)
   if event == "ADDON_LOADED" then
     Module.OnEvent_AddonLoaded(frame, ...);
   elseif event == "PLAYER_ENTERING_WORLD" then
-    Module.Broadcast.Send(Module.Broadcast.Topics.PLAYER_ENTERING);  
+    Module.Broadcast.Send(Module.Broadcast.Topics.PLAYER_ENTERING, "", "RAID");  
   elseif event == "PLAYER_LEAVING_WORLD" then
-    Module.Broadcast.Send(Module.Broadcast.Topics.PLAYER_LEAVING);  
+    Module.Broadcast.Send(Module.Broadcast.Topics.PLAYER_LEAVING, "", "RAID");  
   else
     Module.Log.Debug("Unhandled Event", event)
   end
