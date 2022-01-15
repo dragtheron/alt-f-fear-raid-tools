@@ -107,10 +107,10 @@ function AFFRT.Core.Database.Init()
 end
 
 function AFFRT.Core.Database.InitModuleData(moduleName)
-  if not AFFRT.Core.Database.data[moduleName] then
-    AFFRT.Core.Database.data[moduleName] = {};
+  if not AFFRT_SV.Data[moduleName] then
+    AFFRT_SV.Data[moduleName] = {};
   end
-  return AFFRT.Core.Database.data[moduleName]
+  return AFFRT_SV.Data[moduleName]
 end
 
 function AFFRT.Core.Database.Update(database, path, value)
