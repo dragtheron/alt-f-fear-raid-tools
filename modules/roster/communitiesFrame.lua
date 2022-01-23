@@ -21,12 +21,10 @@ AFFRT.Roster.CommunitiesFrame = {}
 -- update tab state and visibility when display mode changes (by original blizz events)
 function AFFRT.Roster.CommunitiesFrame.Update(frame)
 	if not frame.displayAFFRT then
-		CommunitiesFrame.AFFRT_MembersList:SetShown(false);
-		CommunitiesFrame.AFFRT_RosterList:SetShown(false);
+		CommunitiesFrame.AFFRT_Roster_CommunitiesFrame:SetShown(false);
     CommunitiesFrame.AFFRT_RosterTab:SetChecked(false);
   else
-		CommunitiesFrame.AFFRT_MembersList:SetShown(true);
-		CommunitiesFrame.AFFRT_RosterList:SetShown(true);
+		CommunitiesFrame.AFFRT_Roster_CommunitiesFrame:SetShown(true);
     CommunitiesFrame.GuildMemberListDropDownMenu:SetShown(false);
     CommunitiesFrame.CommunityMemberListDropDownMenu:SetShown(false);
 
@@ -250,9 +248,8 @@ AFFRT.Roster.CommunitiesFrame.MembersList = {};
 -- load guild member info
 function AFFRT.Roster.CommunitiesFrame.MembersList.UpdateList(frame)
   local clubId = CommunitiesFrame:GetSelectedClubId();
-	frame.memberIds = CommunitiesUtil.GetMemberIdsSortedByName(clubId, nil);
-	frame.allMemberList = CommunitiesUtil.GetMemberInfo(clubId, frame.memberIds);
-	frame.allMemberInfoLookup = CommunitiesUtil.GetMemberInfoLookup(frame.allMemberList);
+	local memberIds = CommunitiesUtil.GetMemberIdsSortedByName(clubId, nil);
+	frame.allMemberList = CommunitiesUtil.GetMemberInfo(clubId, memberIds);
 	frame.allMemberList = CommunitiesUtil.SortMemberInfo(clubId, frame.allMemberList);
   frame.sortedMemberList = frame.allMemberList;
   frame.sortedMemberLookup = frame.allMemberInfoLookup;
@@ -264,6 +261,7 @@ function AFFRT.Roster.CommunitiesFrame.MembersList.UpdateList(frame)
       member.itemLevel = playerData.itemLevel or nil;
       member.itemLevelColor = playerData.itemLevelColor or nil;
     end
+    member.clubId = clubId;
   end
 
   AFFRT.Roster.CommunitiesFrame.MembersList.Update(frame);
@@ -317,8 +315,41 @@ local columns = {
   },
 }
 
+-- load guild member info
+function AFFRT.Roster.CommunitiesFrame.RosterList.UpdateList(frame)
+  local clubId = CommunitiesFrame:GetSelectedClubId();
+	local memberIds = CommunitiesUtil.GetMemberIdsSortedByName(clubId, nil);
+	local allMemberList = CommunitiesUtil.GetMemberInfo(clubId, memberIds);
+	local allMemberList = CommunitiesUtil.SortMemberInfo(clubId, allMemberList);
+
+  frame.allMemberList = {};
+
+  -- filter out those who are not on the roster
+  local rosterClubMembers, rosterExternalMembers = AFFRT.Roster.GetRosterMembers(clubId);
+  if rosterClubMembers then
+    for i, member in ipairs(allMemberList) do
+      if rosterClubMembers[member.guid] and rosterClubMembers[member.guid].enabled then
+        frame.allMemberList[#frame.allMemberList+1] = allMemberList[i]
+      end
+    end
+    
+    -- inject item levels
+    for i, member in ipairs(frame.allMemberList) do
+      local playerData = AFFRT.Roster.GetPlayerData(member.guid);
+      if playerData then
+        member.itemLevel = playerData.itemLevel or nil;
+        member.itemLevelColor = playerData.itemLevelColor or nil;
+      end
+      member.clubId = clubId;
+    end
+  end
+
+  frame.sortedMemberList = frame.allMemberList;
+  AFFRT.Roster.CommunitiesFrame.MembersList.Update(frame);
+end
+
 function AFFRT.Roster.CommunitiesFrame.RosterList.OnShow(frame)
-  AFFRT.Roster.CommunitiesFrame.MembersList.UpdateList(frame);
+  AFFRT.Roster.CommunitiesFrame.RosterList.UpdateList(frame);
 end
 
 function AFFRT.Roster.CommunitiesFrame.RosterList.Update(frame)
@@ -328,7 +359,7 @@ end
 
 function AFFRT.Roster.CommunitiesFrame.RosterList.OnPlayerDataUpdated(frame)
   if frame then
-    AFFRT.Roster.CommunitiesFrame.MembersList.UpdateList(frame);
+    AFFRT.Roster.CommunitiesFrame.RosterList.UpdateList(frame);
     AFFRT.Roster.CommunitiesFrame.RefreshListDisplay(frame);
   end
 end
@@ -347,7 +378,21 @@ function AFFRT.Roster.CommunitiesFrame.RosterList.OnLoad(frame)
   AFFRT.Roster.EventsMixin:RegisterCallback(AFFRT.Roster.EventsMixin.Event.PlayerDataUpdated, AFFRT.Roster.CommunitiesFrame.RosterList.OnPlayerDataUpdated, frame);
 end
 
-AFFRT.Roster.EventsMixin = CreateFromMixins(CallbackRegistryMixin);
-AFFRT.Roster.EventsMixin:GenerateCallbackEvents({
-  "PlayerDataUpdated",
-});
+AFFRT.Roster.CommunitiesEntry = {};
+
+function AFFRT.Roster.CommunitiesEntry.OnClick(button)
+  if not button.memberInfo then
+    return
+  end
+  if AFFRT.Roster.IsInRoster(button.memberInfo) then
+    if button.memberInfo.clubId then
+      AFFRT.Roster.DisableClubMember(button.memberInfo.clubId, button.memberInfo.guid)
+      -- todo: external members
+    end
+  else
+    if button.memberInfo.clubId then
+      AFFRT.Roster.AddFromClub(button.memberInfo.clubId, button.memberInfo.guid)
+      -- todo: external members
+    end
+  end
+end

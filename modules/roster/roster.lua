@@ -10,9 +10,43 @@ Module.PlayerEnteredWorldOnce = false
 Module.PlayerInspectionReady = true
 Module.ItemLevelRequestQueue = {}
 
+function Module.GetRosterClubMembers(clubId)
+  return Module.Database.Get({ "Roster", clubId, "ClubMembers" })
+end
+
+function Module.GetRosterMembers(clubId)
+  local clubMembers = Module.GetRosterClubMembers(clubId)
+  local externalMembers = Module.Database.Get({ "Roster", clubId, "ExternalMembers" })
+  return clubMembers, externalMembers
+end
 
 function Module.GetPlayerData(guid)
   return Module.Database.Get({ "PlayerData", guid });
+end
+
+function Module.IsInRosterByClub(clubId, guid)
+  local clubMembers = Module.GetRosterClubMembers(clubId)
+  if not clubMembers or not clubMembers[guid] or not clubMembers[guid].enabled then
+    return false
+  end
+  return true
+end
+
+function Module.IsInRoster(memberInfo)
+  if memberInfo.guid then
+    return Module.IsInRosterByClub(memberInfo.clubId, memberInfo.guid)
+  end
+  -- todo: external members by name
+end
+
+function Module.AddFromClub(clubId, guid)
+  Module.Database.Update({ "Roster", clubId, "ClubMembers", guid, "enabled" }, true)
+  Module.EventsMixin:TriggerEvent(Module.EventsMixin.Event.PlayerDataUpdated);
+end
+
+function Module.DisableClubMember(clubId, guid)
+  Module.Database.Update({ "Roster", clubId, "ClubMembers", guid, "enabled" }, false)
+  Module.EventsMixin:TriggerEvent(Module.EventsMixin.Event.PlayerDataUpdated);
 end
 
 function Module.QueueItemLevelRequest(channel, target)
@@ -30,7 +64,6 @@ end
 function Module.ProcessQueue()
   for i, request in pairs(Module.ItemLevelRequestQueue) do
     local result = Module.SendItemLevel(request.channel, request.target);
-    Module.Log.Debug("Processing Request", request.channel, request.target);
     if result == false then
       Module.Log.Debug("Processing Failed. Requeue");
     else
@@ -41,12 +74,11 @@ function Module.ProcessQueue()
 end
 
 function Module.Broadcast.OnReceive(frame, sender, topic, ...)
-  Module.Log.Debug("inc", sender, topic);
   if topic == Module.Broadcast.Topics.ItemlevelIncomingPlayer then
     local guid, itemLevel;
     local itemLevelColor = {};
     guid, itemLevel, itemLevelColor.r, itemLevelColor.g, itemLevelColor.b = ...
-    Module.Log.Debug("New itemlevel", ...);
+    Module.Log.Debug("New itemlevel", itemLevel, "from", sender);
     Module.Database.Update({ "PlayerData", guid, "itemLevel" }, itemLevel);
     Module.Database.Update({ "PlayerData", guid, "itemLevelColor" }, itemLevelColor);
     AFFRT.Roster.EventsMixin:TriggerEvent(AFFRT.Roster.EventsMixin.Event.PlayerDataUpdated);
@@ -103,6 +135,11 @@ function Module.OnEvent(frame, event, ...)
     Module.OnEvent_PlayerEquipmentChanged()
   elseif event == "PLAYER_ENTERING_WORLD" then
     Module.OnEvent_PlayerEnteringWorld()  
+  elseif event == "CALENDAR_UPDATE_EVENT"
+      or event == "CALENDAR_UPDATE_PENDING_INVITES"
+      or event == "CALENDAR_UPDATE_INVITE_LIST" then
+    Module.Log.Debug(event)
+    Module.OnEvent_CalendarUpdate()
   else
     Module.Log.Debug("Unhandled Event", event)
   end
@@ -144,6 +181,18 @@ function Module.OnEvent_PlayerEnteringWorld()
   end
 end
 
+function Module.OnEvent_CalendarUpdate()
+  Module.Log.Debug("Received Calendar Update")
+  if Module.LookupCharacter then
+    for i = 1, C_Calendar.GetNumInvites() do
+      local eventInfo = C_Calendar.EventGetInvite(i)
+      if eventInfo.name == Module.LookupCharacter then
+        Module.Log.Debug("Clas Name Found:", eventInfo.className)
+      end
+    end
+  end
+end
+
 function Module.OnLoad(frame)
   frame.Module = Module;
   frame:RegisterEvent("ADDON_LOADED")
@@ -151,4 +200,19 @@ function Module.OnLoad(frame)
   frame:RegisterEvent("GROUP_JOINED")
   frame:RegisterEvent("INSPECT_READY")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+  frame:RegisterEvent("CALENDAR_UPDATE_EVENT")
+  frame:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES")
+  frame:RegisterEvent("CALENDAR_UPDATE_INVITE_LIST")
+  
+  -- Try to get another player's info by calendar
+  Module.LookupCharacter = "Lycantheron"
+  C_Calendar.CreatePlayerEvent()
+  C_Calendar.EventInvite(Module.LookupCharacter)
+  Module.Log.Debug("Invited", Module.LookupCharacter)
 end
+
+Module.EventsMixin = CreateFromMixins(CallbackRegistryMixin);
+  
+Module.EventsMixin:GenerateCallbackEvents({
+  "PlayerDataUpdated",
+});
