@@ -57,7 +57,7 @@ function AFFRT.Core.Broadcast.OnEvent(frame, ...)
 end
 
 function AFFRT.Core.Broadcast.OnReceive(frame, sender, prefix, topic, ...)
-  AFFRT.Core.Log.Debug("Received Message!", sender, prefix, topic)
+  -- AFFRT.Core.Log.Debug("Received Message!", sender, prefix, topic)
   for name, module in pairs(AFFRT.Core.Broadcast.OnAddonMessage) do
     module.Broadcast.OnReceive(frame, sender, topic, ...)
   end
@@ -68,6 +68,15 @@ function AFFRT.Core.Broadcast.Send(prefix, topic, message, channel, target)
   channel = channel or "PARTY"
   topic = topic or ""
   message = topic .. "\t" .. message
+  if channel == "PARTY" and not IsInGroup() then
+    return
+  end
+  if channel == "RAID" and not IsInRaid() then
+    return
+  end
+  if channel == "GUILD" and not IsInGuild() then
+    return
+  end
   C_ChatInfo.SendAddonMessage(prefix, message, channel, target)
   AFFRT.Core.Log.Debug("Message Sent!", prefix, channel, topic)
 end
