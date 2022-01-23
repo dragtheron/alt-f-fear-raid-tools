@@ -71,7 +71,10 @@ function AFFRT.Core.Broadcast.Send(prefix, topic, message, channel, target)
   if channel == "PARTY" and not IsInGroup() then
     return
   end
-  if channel == "RAID" and not IsInRaid() then
+  if channel == "RAID" and not IsInRaid(LE_PARTY_CATEGORY_HOME) then
+    return
+  end
+  if channel == "INSTANCE_CHAT" and not IsInInstance() then
     return
   end
   if channel == "GUILD" and not IsInGuild() then
